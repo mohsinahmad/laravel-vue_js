@@ -46,7 +46,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
         </form>
 
         <!-- Right navbar links -->
-        <ul class="navbar-nav ml-auto">
+        {{--<ul class="navbar-nav ml-auto">
             <!-- Messages Dropdown Menu -->
             <li class="nav-item dropdown">
                 <a class="nav-link" data-toggle="dropdown" href="#">
@@ -136,7 +136,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                 <a class="nav-link" data-widget="control-sidebar" data-slide="true" href="#"><i
                             class="fa fa-th-large"></i></a>
             </li>
-        </ul>
+        </ul>--}}
     </nav>
     <!-- /.navbar -->
 
@@ -168,51 +168,55 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <!-- Add icons to the links using the .nav-icon class
                          with font-awesome or any other icon font library -->
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-tachometer-alt"></i>
+                        <router-link to="/dashboard" class="nav-link">
+                            <i class="nav-icon fas fa-tachometer-alt blue"></i>
                             <p>
-                                Dashboard
+                                {{ __('Dashboard') }}
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                     <li class="nav-item has-treeview">
-                        <a href="#" class="nav-link active">
-                            <i class="nav-icon fa fa-cog"></i>
+                        <a href="#" class="nav-link">
+                            <i class="nav-icon fa fa-cog green"></i>
                             <p>
-                                Manage
+                                {{ __('Manage') }}
                                 <i class="right fa fa-angle-left"></i>
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
                             <li class="nav-item">
-                                <a href="#" class="nav-link active">
-                                    <i class="fas fa-circle nav-icon"></i>
-                                    <p>Users</p>
-                                </a>
+                                <router-link to="/users" class="nav-link">
+                                    <i class="fas fa-users nav-icon yellow"></i>
+                                    <p>{{ __('Users') }}</p>
+                                </router-link>
                             </li>
                             <li class="nav-item">
                                 <a href="#" class="nav-link">
                                     <i class="fa fa-circle-o nav-icon"></i>
-                                    <p>Pages</p>
+                                    <p>{{ __('Pages') }}</p>
                                 </a>
                             </li>
                         </ul>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fas fa-user"></i>
+                        <router-link to="/profile" class="nav-link">
+                            <i class="nav-icon fas fa-user orange"></i>
                             <p>
-                                Profile
+                                {{ __('Profile') }}
                             </p>
-                        </a>
+                        </router-link>
                     </li>
                     <li class="nav-item">
-                        <a href="#" class="nav-link">
-                            <i class="nav-icon fa fa-power-off"></i>
+                        <a href="{{ route('logout') }}" class="nav-link" onclick="event.preventDefault();
+                                                     document.getElementById('logout-form').submit();">
+                            <i class="nav-icon fa fa-power-off red"></i>
                             <p>
                                 Logout
                             </p>
                         </a>
+                        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+                            @csrf
+                        </form>
                     </li>
                 </ul>
             </nav>
@@ -224,7 +228,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <!-- Content Header (Page header) -->
-        <div class="content-header">
+        {{--<div class="content-header">
             <div class="container-fluid">
                 <div class="row mb-2">
                     <div class="col-sm-6">
@@ -238,7 +242,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     </div><!-- /.col -->
                 </div><!-- /.row -->
             </div><!-- /.container-fluid -->
-        </div>
+        </div>--}}
         <!-- /.content-header -->
 
         <!-- Main content -->
@@ -253,13 +257,13 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- /.content-wrapper -->
 
     <!-- Control Sidebar -->
-    <aside class="control-sidebar control-sidebar-dark">
+    {{--<aside class="control-sidebar control-sidebar-dark">
         <!-- Control sidebar content goes here -->
         <div class="p-3">
             <h5>Title</h5>
             <p>Sidebar content</p>
         </div>
-    </aside>
+    </aside>--}}
     <!-- /.control-sidebar -->
 
     <!-- Main Footer -->
