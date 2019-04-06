@@ -24,14 +24,16 @@
                             </tr>
                             <tr v-for="user in users" :key="user.id">
                                 <td>{{ user.id }}</td>
-                                <td>{{ user.name }}</td>
+                                <td>{{ user.name | capitalize }}</td>
                                 <td>{{ user.email }}</td>
-                                <td><span class="tag tag-success">{{ user.created_at }}</span></td>
+                                <td><span
+                                        class="tag tag-success">{{ user.created_at | diffForHumans | capitalize }}</span>
+                                </td>
                                 <td>
                                     <a href="#">
                                         <i class="fa fa-edit"></i>
                                     </a>
-                                    <a href="#">
+                                    <a href="#" @click="deleteUser(user.id)">
                                         <i class="fa fa-trash-alt red"></i>
                                     </a>
                                 </td>
@@ -68,7 +70,7 @@
                                 <has-error :form="form" field="email"></has-error>
                             </div>
                             <div class="form-group">
-                                <input v-model="form.password" type="text" name="password" placeholder="password"
+                                <input v-model="form.password" type="password" name="password" placeholder="password"
                                        class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
                                 <has-error :form="form" field="password"></has-error>
                             </div>
@@ -88,7 +90,7 @@
     export default {
         data() {
             return {
-                users : {},
+                users: {},
                 form: new Form({
                     name: '',
                     email: '',
@@ -98,16 +100,63 @@
             }
         },
         methods: {
-            listUsers(){
-                axios.get('api/user').then(({ data }) => (this.users = data.data))
+            listUsers() {
+                this.$Progress.start();
+                axios.get('api/user').then(({data}) => (this.users = data.data));
+                this.$Progress.finish();
             },
-            createUser(){
-                this.form.post('api/user');
+            createUser() {
+                this.$Progress.start();
+                this.form.post('api/user')
+                    .then(() => {
+                        Fire.$emit('created');
+                        $('#addNew').modal('hide');
+                        this.$Progress.finish();
+                        Toast.fire({
+                            type: 'success',
+                            title: 'Signed in successfully'
+                        });
+                    })
+                    .catch(() => {
+
+                    })
+            },
+            deleteUser(id) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    type: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.value) {
+                        this.form.delete('api/user/' + id)
+                            .then(() => {
+                                Fire.$emit('deleted');
+                                Swal.fire(
+                                    'Deleted!',
+                                    'Your file has been deleted.',
+                                    'success'
+                                )
+                            })
+                            .catch(() => {
+                                swal('Failed', 'There was somthing worng', 'warning')
+                            })
+                    }
+                })
             }
         },
         mounted() {
             console.log('Component mounted.');
             this.listUsers();
+            Fire.$on('created', () => {
+                this.listUsers();
+            });
+            Fire.$on('deleted', () => {
+                this.listUsers();
+            })
         }
     }
 </script>

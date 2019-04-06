@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Http\Requests\CreateUserAPIRequest;
 use App\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -25,12 +26,15 @@ class UserAPIController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param CreateUserAPIRequest $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CreateUserAPIRequest $request)
     {
-        return response('Hi baby! you got me');
+        $input = $request->all();
+        $input['password'] = bcrypt($request->password);
+        User::create($input);
+        return response('success');
     }
 
     /**
@@ -64,6 +68,9 @@ class UserAPIController extends Controller
      */
     public function destroy($id)
     {
-        return response(User::all());
+        $user = User::find($id);
+
+        $user->delete();
+        return response($user);
     }
 }
