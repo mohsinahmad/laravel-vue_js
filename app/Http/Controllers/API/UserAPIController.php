@@ -3,8 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Requests\CreateUserAPIRequest;
+use App\Http\Requests\UpdateUserAPIRequest;
 use App\User;
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
 /**
@@ -13,6 +13,14 @@ use App\Http\Controllers\Controller;
  */
 class UserAPIController extends Controller
 {
+    /**
+     * UserAPIController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -51,13 +59,15 @@ class UserAPIController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param UpdateUserAPIRequest $request
      * @param  int $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateUserAPIRequest $request, $id)
     {
-        return response(User::all());
+        $user = User::find($id);
+        $user->update($request->all());
+        return response($user);
     }
 
     /**

@@ -7,7 +7,7 @@
                         <h3 class="card-title">Manage User</h3>
 
                         <div class="card-tools">
-                            <button class="btn btn-success" data-toggle="modal" data-target="#addNew"> Add New <i
+                            <button class="btn btn-success" @click="addModal()"> Add New <i
                                     class="fas fa-user-plus fa-fw"></i></button>
                         </div>
                     </div>
@@ -30,7 +30,7 @@
                                         class="tag tag-success">{{ user.created_at | diffForHumans | capitalize }}</span>
                                 </td>
                                 <td>
-                                    <a href="#">
+                                    <a href="#" @click="editModal(user)">
                                         <i class="fa fa-edit"></i>
                                     </a>
                                     <a href="#" @click="deleteUser(user.id)">
@@ -52,12 +52,12 @@
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h5 class="modal-title" id="addNewLabel">Add User</h5>
+                        <h5 class="modal-title" id="addNewLabel">{{ addData ? 'Add User' : 'Edit User' }}</h5>
                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                             <span aria-hidden="true">&times;</span>
                         </button>
                     </div>
-                    <form @submit.prevent="createUser" @keydown="form.onKeydown($event)">
+                    <form @submit.prevent="addData?createUser():updateUser()" @keydown="form.onKeydown($event)">
                         <div class="modal-body">
                             <div class="form-group">
                                 <input v-model="form.name" type="text" name="name" placeholder="Name"
@@ -77,7 +77,8 @@
                         </div>
                         <div class="modal-footer">
                             <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                            <button v-show="!addData" type="submit" class="btn btn-success">Update</button>
+                            <button v-show="addData" type="submit" class="btn btn-primary">Create</button>
                         </div>
                     </form>
                 </div>
@@ -90,8 +91,10 @@
     export default {
         data() {
             return {
+                addData: true,
                 users: {},
                 form: new Form({
+                    id: '',
                     name: '',
                     email: '',
                     password: '',
@@ -109,7 +112,7 @@
                 this.$Progress.start();
                 this.form.post('api/user')
                     .then(() => {
-                        Fire.$emit('created');
+                        Fire.$emit('refresh');
                         $('#addNew').modal('hide');
                         this.$Progress.finish();
                         Toast.fire({
@@ -118,7 +121,24 @@
                         });
                     })
                     .catch(() => {
-
+                        this.$Progress.fail();
+                    })
+            },
+            updateUser() {
+                this.form.put('api/user/' + this.form.id)
+                    .then(() => {
+                        Fire.$emit('refresh');
+                        $('#addNew').modal('hide');
+                        this.$Progress.finish();
+                        Swal.fire(
+                            'Updated!',
+                            'Data has been updated successfully.',
+                            'success'
+                        )
+                    })
+                    .catch(() => {
+                        this.$Progress.fail();
+                        Swal.fire('Failed', 'There was something wrong', 'warning')
                     })
             },
             deleteUser(id) {
@@ -134,29 +154,37 @@
                     if (result.value) {
                         this.form.delete('api/user/' + id)
                             .then(() => {
-                                Fire.$emit('deleted');
+                                Fire.$emit('refresh');
                                 Swal.fire(
                                     'Deleted!',
-                                    'Your file has been deleted.',
+                                    'User has been deleted.',
                                     'success'
                                 )
                             })
                             .catch(() => {
-                                swal('Failed', 'There was somthing worng', 'warning')
+                                swal('Failed', 'There was something wrong', 'warning')
                             })
                     }
                 })
+            },
+            addModal() {
+                this.addData = true;
+                this.form.reset();
+                $('#addNew').modal('show');
+            },
+            editModal(user) {
+                this.addData = false;
+                this.form.reset();
+                this.form.clear();
+                $('#addNew').modal('show');
+                this.form.fill(user);
             }
         },
         mounted() {
-            console.log('Component mounted.');
             this.listUsers();
-            Fire.$on('created', () => {
+            Fire.$on('refresh', () => {
                 this.listUsers();
             });
-            Fire.$on('deleted', () => {
-                this.listUsers();
-            })
         }
     }
 </script>
