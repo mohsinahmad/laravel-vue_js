@@ -26,7 +26,7 @@
                     <!-- Add the bg color to the header using any of the bg-* classes -->
                     <div class="widget-user-header text-white"
                          style="background: url('./img/user-cover.png') center center;">
-                        <h3 class="widget-user-username">Elizabeth Pierce</h3>
+                        <h3 class="widget-user-username">{{ form.name }}</h3>
                         <h5 class="widget-user-desc">Web Designer</h5>
                     </div>
                     <div class="widget-user-image">
@@ -75,7 +75,7 @@
                             <img class="profile-user-img img-fluid img-circle" src="#" alt="User profile picture">
                         </div>
 
-                        <h3 class="profile-username text-center">Nina Mcintire</h3>
+                        <h3 class="profile-username text-center">{{ form.name }}</h3>
 
                         <p class="text-muted text-center">Software Engineer</p>
 
@@ -380,7 +380,8 @@
                                         <label for="inputName" class="col-sm-2 control-label">Name</label>
 
                                         <div class="col-sm-10">
-                                            <input type="email" class="form-control" id="inputName" placeholder="Name">
+                                            <input type="email" v-model="form.name" class="form-control" id="inputName"
+                                                   placeholder="Name">
                                         </div>
                                     </div>
                                     <div class="form-group">
@@ -445,8 +446,24 @@
 
 <script>
     export default {
+        data() {
+            return {
+                // addData: true,
+                // users: {},
+                form: new Form({
+                    id: '',
+                    name: '',
+                    email: '',
+                    password: '',
+                    photo: '',
+                    remember: false
+                })
+            }
+        },
         mounted() {
-            console.log('Component mounted.')
+            console.log('Component mounted.');
+            axios.get('api/profile')
+                .then(({data}) => (this.form.fill(data)));
         }
     }
 </script>
